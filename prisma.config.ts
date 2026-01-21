@@ -3,12 +3,20 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+// Build datasource config conditionally
+const datasourceConfig: { url: string; directUrl?: string } = {
+  url: process.env["DATABASE_URL"]!,
+};
+
+// Optional: Use superuser for migrations if DATABASE_URL user lacks CREATEDB permission
+if (process.env["DIRECT_URL"]) {
+  datasourceConfig.directUrl = process.env["DIRECT_URL"];
+}
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
-  datasource: {
-    url: process.env["DATABASE_URL"],
-  },
+  datasource: datasourceConfig,
 });

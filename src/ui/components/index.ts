@@ -50,3 +50,15 @@ export {
 } from "./dropdown-menu";
 export { Badge, badgeVariants } from "./badge";
 export { Separator } from "./separator";
+export {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
+} from "./select";

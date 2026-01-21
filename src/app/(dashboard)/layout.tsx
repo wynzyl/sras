@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { DashboardNav } from "./dashboard-nav";
+
 export default function DashboardLayout({
   children,
 }: {
@@ -9,13 +12,11 @@ export default function DashboardLayout({
       <aside className="w-64 border-r bg-card">
         <div className="flex h-full flex-col">
           <div className="flex h-16 items-center border-b px-6">
-            <h1 className="text-lg font-semibold">SRAS</h1>
+            <Link href="/dashboard" className="text-lg font-semibold hover:opacity-80">
+              SRAS
+            </Link>
           </div>
-          <nav className="flex-1 space-y-1 p-4">
-            <div className="px-3 py-2 text-sm text-muted-foreground">
-              Navigation placeholder
-            </div>
-          </nav>
+          <DashboardNav />
         </div>
       </aside>
 

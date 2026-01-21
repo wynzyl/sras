@@ -7,7 +7,269 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // url and directUrl are configured in prisma.config.ts
 }
 
-// Models will be added here
+// ============================================================================
+// ACADEMIC MODELS
+// ============================================================================
+
+model SchoolYear {
+  id        String   @id @default(cuid())
+  name      String // e.g. "2026-2027"
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  subjects     Subject[]
+  feeSchedules FeeSchedule[]
+  enrollments  Enrollment[]
+
+  @@index([isActive])
+}
+
+model GradeLevel {
+  id        String   @id @default(cuid())
+  code      String // e.g. "G7"
+  name      String // e.g. "Grade 7"
+  sortOrder Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  subjects     Subject[]
+  feeSchedules FeeSchedule[]
+  enrollments  Enrollment[]
+
+  @@unique([code])
+  @@index([sortOrder])
+}
+
+model CurriculumVersion {
+  id            String   @id @default(cuid())
+  name          String
+  effectiveDate DateTime
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  subjects Subject[]
+
+  @@index([isActive])
+}
+
+model Subject {
+  id                  String   @id @default(cuid())
+  code                String
+  name                String
+  units               Int?
+  gradeLevelId        String
+  curriculumVersionId String
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  gradeLevel        GradeLevel        @relation(fields: [gradeLevelId], references: [id], onDelete: Restrict)
+  curriculumVersion CurriculumVersion @relation(fields: [curriculumVersionId], references: [id], onDelete: Restrict)
+  schoolYear        SchoolYear?       @relation(fields: [schoolYearId], references: [id])
+  schoolYearId      String?
+
+  @@unique([code, gradeLevelId, curriculumVersionId])
+  @@index([gradeLevelId, curriculumVersionId])
+  @@index([isActive])
+}
+
+// ============================================================================
+// ACCOUNTING MASTER MODELS
+// ============================================================================
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+  CONTRA_REVENUE
+}
+
+model Account {
+  id        String      @id @default(cuid())
+  code      String      @unique
+  name      String
+  type      AccountType
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([code])
+  @@index([type])
+  @@index([isActive])
+}
+
+model FeeItem {
+  id                 String   @id @default(cuid())
+  code               String   @unique
+  name               String
+  defaultAmountCents Int // Integer cents, no floats
+  revenueAccountCode String // References Account.code (FK-like, validated at application level)
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  feeScheduleLines FeeScheduleLine[]
+
+  @@index([code])
+  @@index([revenueAccountCode])
+  @@index([isActive])
+}
+
+model FeeSchedule {
+  id           String   @id @default(cuid())
+  schoolYearId String
+  gradeLevelId String
+  name         String
+  isDefault    Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  schoolYear SchoolYear        @relation(fields: [schoolYearId], references: [id], onDelete: Restrict)
+  gradeLevel GradeLevel        @relation(fields: [gradeLevelId], references: [id], onDelete: Restrict)
+  lines      FeeScheduleLine[]
+
+  @@unique([schoolYearId, gradeLevelId, name])
+  @@index([schoolYearId, gradeLevelId])
+  @@index([isDefault])
+  @@index([isActive])
+}
+
+model FeeScheduleLine {
+  id            String   @id @default(cuid())
+  feeScheduleId String
+  feeItemId     String
+  amountCents   Int // Integer cents, no floats
+  isRequired    Boolean  @default(true)
+  sortOrder     Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  feeSchedule FeeSchedule @relation(fields: [feeScheduleId], references: [id], onDelete: Cascade)
+  feeItem     FeeItem     @relation(fields: [feeItemId], references: [id], onDelete: Restrict)
+
+  @@index([feeScheduleId])
+  @@index([feeItemId])
+  @@index([feeScheduleId, sortOrder])
+}
+
+// ============================================================================
+// STUDENTS + ENROLLMENT MODELS
+// ============================================================================
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  RESERVED
+  CANCELLED
+  TRANSFERRED
+}
+
+enum LedgerDirection {
+  DEBIT
+  CREDIT
+}
+
+enum LedgerSourceType {
+  ASSESSMENT_LINE
+  PAYMENT
+  ADJUSTMENT
+  REFUND
+  REVERSAL
+}
+
+model Student {
+  id            String    @id @default(cuid())
+  studentNo     String    @unique
+  lastName      String
+  firstName     String
+  middleName    String?
+  sex           Sex?
+  birthDate     DateTime?
+  address       String?
+  guardianName  String?
+  guardianPhone String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  enrollments Enrollment[]
+  ledgerEntries LedgerEntry[]
+
+  @@index([lastName, firstName])
+  @@index([studentNo])
+  @@index([isActive])
+}
+
+model Enrollment {
+  id           String           @id @default(cuid())
+  studentId    String
+  schoolYearId String
+  gradeLevelId String
+  sectionName  String?
+  status       EnrollmentStatus @default(ENROLLED)
+  enrolledAt   DateTime         @default(now())
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  // Relations
+  student       Student       @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  schoolYear    SchoolYear    @relation(fields: [schoolYearId], references: [id], onDelete: Restrict)
+  gradeLevel    GradeLevel    @relation(fields: [gradeLevelId], references: [id], onDelete: Restrict)
+  ledgerEntries LedgerEntry[]
+
+  @@unique([studentId, schoolYearId])
+  @@index([schoolYearId, gradeLevelId])
+  @@index([studentId])
+  @@index([status])
+  @@index([enrolledAt])
+}
+
+// ============================================================================
+// LEDGER MODELS
+// ============================================================================
+
+model LedgerEntry {
+  id           String           @id @default(cuid())
+  studentId    String
+  enrollmentId String?
+  date         DateTime         @default(now())
+  accountCode  String // Store code to keep stable reference
+  direction    LedgerDirection
+  amountCents  Int // Integer cents, no floats
+  sourceType   LedgerSourceType
+  sourceId     String // Points to AssessmentLine/PaymentReceipt/etc
+  memo         String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  // Relations
+  student    Student     @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  enrollment Enrollment? @relation(fields: [enrollmentId], references: [id], onDelete: Restrict)
+
+  @@index([studentId, date])
+  @@index([enrollmentId, date])
+  @@index([accountCode, date])
+  @@index([sourceType, sourceId])
+}

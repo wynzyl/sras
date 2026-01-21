@@ -48,11 +48,29 @@ Update `.env`:
 DATABASE_URL="postgresql://sras_user:sras_password@localhost:5432/sras?schema=public"
 ```
 
-**3. Run Prisma migrations:**
+**3. Create the database (if it doesn't exist):**
+
+Option A - Using the helper script:
+```bash
+npm run db:create
+```
+
+Option B - Manually using psql:
+```bash
+psql -U postgres
+```
+```sql
+CREATE DATABASE sras_db;
+\q
+```
+
+**4. Run Prisma migrations:**
 
 ```bash
 npm run db:migrate
 ```
+
+> **Note:** If you get a "permission denied to create database" error, the database needs to be created manually first (see Option B above), or you need to grant CREATEDB permission to your PostgreSQL user.
 
 ### Installation Steps
 
@@ -112,3 +130,4 @@ prisma/
 - `npm run db:generate` - Generate Prisma Client
 - `npm run db:migrate` - Run database migrations
 - `npm run db:studio` - Open Prisma Studio
+- `npm run db:create` - Create the database (if it doesn't exist)
