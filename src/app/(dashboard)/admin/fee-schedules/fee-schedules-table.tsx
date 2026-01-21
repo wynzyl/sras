@@ -103,7 +103,7 @@ export function FeeSchedulesTable({
 /**
  * New Fee Schedule button component
  */
-FeeSchedulesTable.NewFeeScheduleButton = function NewFeeScheduleButton({
+export function NewFeeScheduleButton({
   schoolYears,
   gradeLevels,
 }: {
@@ -123,4 +123,7 @@ FeeSchedulesTable.NewFeeScheduleButton = function NewFeeScheduleButton({
       />
     </>
   );
-};
+}
+
+// Attach as a property for backward compatibility
+FeeSchedulesTable.NewFeeScheduleButton = NewFeeScheduleButton;

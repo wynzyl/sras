@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 import {
   Dialog,
   DialogContent,
@@ -46,7 +46,7 @@ export function AddFeeScheduleLineDialog({
   const [isRequired, setIsRequired] = React.useState<string>("true");
   const formRef = React.useRef<HTMLFormElement>(null);
 
-  const [state, formAction] = useFormState<
+  const [state, formAction] = React.useActionState<
     ActionResult<{ id: string }>,
     FormData
   >(async (prevState, formData) => {
@@ -149,7 +149,7 @@ export function AddFeeScheduleLineDialog({
                 name="isRequired"
                 value={isRequired}
                 onChange={(e) => setIsRequired(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                className="flex h-10 w-full rounded-md border border-input bg-white text-black px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               >
                 <option value="true">Required</option>
                 <option value="false">Optional</option>

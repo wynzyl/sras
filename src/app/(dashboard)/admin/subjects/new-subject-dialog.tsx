@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 import {
   Dialog,
   DialogContent,
@@ -41,7 +41,7 @@ export function NewSubjectDialog({
   const [open, setOpen] = React.useState(false);
   const formRef = React.useRef<HTMLFormElement>(null);
 
-  const [state, formAction] = useFormState<
+  const [state, formAction] = React.useActionState<
     ActionResult<{ id: string; code: string }>,
     FormData
   >(async (prevState, formData) => {
@@ -154,12 +154,12 @@ export function NewSubjectDialog({
 
             <div className="space-y-2">
               <Label htmlFor="isActive">Status</Label>
-              <select
-                id="isActive"
-                name="isActive"
-                defaultValue="true"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              >
+            <select
+              id="isActive"
+              name="isActive"
+              defaultValue="true"
+              className="flex h-10 w-full rounded-md border border-input bg-white text-black px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
               </select>

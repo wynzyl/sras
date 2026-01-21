@@ -128,11 +128,11 @@ export function StudentDetail({ student }: { student: StudentWithEnrollments }) 
         )}
         <div>
           <p className="text-sm text-muted-foreground">Status</p>
-          <p className="font-medium">
+          <div className="font-medium">
             <Badge variant={student.isActive ? "default" : "secondary"}>
               {student.isActive ? "Active" : "Inactive"}
             </Badge>
-          </p>
+          </div>
         </div>
       </div>
 

@@ -60,7 +60,7 @@ export function AccountsTable({ accounts }: { accounts: Account[] }) {
 /**
  * New Account button component
  */
-AccountsTable.NewAccountButton = function NewAccountButton() {
+function NewAccountButton() {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -69,4 +69,10 @@ AccountsTable.NewAccountButton = function NewAccountButton() {
       <NewAccountDialog open={open} onOpenChange={setOpen} />
     </>
   );
-};
+}
+
+// Attach as a property for backward compatibility
+AccountsTable.NewAccountButton = NewAccountButton;
+
+// Also export separately for better compatibility
+export { NewAccountButton };

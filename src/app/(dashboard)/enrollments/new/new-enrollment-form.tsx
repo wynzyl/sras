@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 import { Button } from "@/ui/components/button";
 import { Input } from "@/ui/components/input";
 import { Label } from "@/ui/components/label";
@@ -68,7 +68,7 @@ export function NewEnrollmentForm({
     return () => clearTimeout(timeoutId);
   }, [studentSearchQuery]);
 
-  const [state, formAction] = useFormState<
+  const [state, formAction] = React.useActionState<
     ActionResult<{ id: string }>,
     FormData
   >(async (prevState, formData) => {

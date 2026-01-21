@@ -79,7 +79,7 @@ export function FeeItemsTable({
 /**
  * New Fee Item button component
  */
-FeeItemsTable.NewFeeItemButton = function NewFeeItemButton({
+function NewFeeItemButton({
   accounts,
 }: {
   accounts: Account[];
@@ -96,4 +96,10 @@ FeeItemsTable.NewFeeItemButton = function NewFeeItemButton({
       />
     </>
   );
-};
+}
+
+// Attach as a property for backward compatibility
+FeeItemsTable.NewFeeItemButton = NewFeeItemButton;
+
+// Also export separately for better compatibility
+export { NewFeeItemButton };

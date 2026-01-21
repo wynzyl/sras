@@ -62,14 +62,19 @@ export function CurriculumVersionsTable({
 /**
  * New Curriculum Version button component
  */
-CurriculumVersionsTable.NewCurriculumVersionButton =
-  function NewCurriculumVersionButton() {
-    const [open, setOpen] = React.useState(false);
+function NewCurriculumVersionButton() {
+  const [open, setOpen] = React.useState(false);
 
-    return (
-      <>
-        <Button onClick={() => setOpen(true)}>New Curriculum Version</Button>
-        <NewCurriculumVersionDialog open={open} onOpenChange={setOpen} />
-      </>
-    );
-  };
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>New Curriculum Version</Button>
+      <NewCurriculumVersionDialog open={open} onOpenChange={setOpen} />
+    </>
+  );
+}
+
+// Attach as a property for backward compatibility
+CurriculumVersionsTable.NewCurriculumVersionButton = NewCurriculumVersionButton;
+
+// Also export separately for better compatibility
+export { NewCurriculumVersionButton };
